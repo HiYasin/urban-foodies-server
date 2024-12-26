@@ -84,6 +84,26 @@ async function run() {
       res.send(food);
     })
 
+    //get specific users foods
+    app.get('/food', async (req, res) => {
+      const email = req.query.email;
+
+      query = { 'adder_email': email };
+
+      console.log(email);
+
+      const foodCollection = database.collection('foods');
+      const cursor = foodCollection.find(query);
+      const foods = await cursor.toArray();
+      if(foods){
+        res.send(foods);
+      } else {
+        res.send('food not found')
+      }
+
+    });
+
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
