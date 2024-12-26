@@ -43,7 +43,7 @@ async function run() {
     //await client.connect();
 
     const database = client.db('urbanFoodiesDB');
-    
+
     // auth related apis
     app.post('/jwt', (req, res) => {
       const user = req.body;
@@ -58,6 +58,14 @@ async function run() {
         })
         .send({ success: true })
     })
+
+
+    app.post('/foods', async (req, res) => {
+      const foodCollection = database.collection('foods');
+      const foodItem = req.body;
+      const result = await foodCollection.insertOne(foodItem);
+      res.send(result);
+    });
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
