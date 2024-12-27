@@ -130,10 +130,7 @@ async function run() {
     //get specific users ordered foods
     app.get('/myorder', async (req, res) => {
       const email = req.query.email;
-
       query = { 'buyer_email': email };
-
-      console.log(email);
 
       const foodCollection = database.collection('purchasedFoods');
       const cursor = foodCollection.find(query);
@@ -145,6 +142,21 @@ async function run() {
       }
 
     });
+
+    // Delete a specific order
+    app.delete('/myorder/:id', async (req, res) => {
+      const id = req.params.id;
+      const foodCollection = database.collection('purchasedFoods');
+      const query = { _id: new ObjectId(id) };
+      const result = await foodCollection.deleteOne(query);
+
+      if (result.deletedCount > 0) {
+        res.send({ message: 'Order deleted successfully' });
+      } else {
+        res.status(404).send({ message: 'No order found with the given ID' });
+      }
+    });
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
