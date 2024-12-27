@@ -64,8 +64,7 @@ async function run() {
       const foodCollection = database.collection('foods');
       const foodItem = req.body;
       const result = await foodCollection.insertOne(foodItem);
-
-      // ...existing code...      res.send(result);
+      res.send(result)
     });
 
     //get all foods
@@ -109,28 +108,24 @@ async function run() {
       const updatedData = req.body;
       const id = updatedData._id;
       delete updatedData._id;
-      //console.log(updatedData);
-      ///console.log(id);
-
-
-
       const foodCollection = database.collection('foods');
       const filter = { _id: new ObjectId(id) };
       const update = { $set: updatedData };
-
-
       const result = await foodCollection.updateOne(filter, update);
-
-      // console.log('Update result:', result);
-
       if (result.modifiedCount > 0) {
         res.send({ message: 'Food updated successfully' });
       } else {
         res.status(404).send({ message: 'No food found with the given ID' });
       }
     });
-
-
+    
+    // Purchase food
+    app.post('/purchase', async (req, res) => {
+      const foodCollection = database.collection('purchasedFoods');
+      const foodItem = req.body;
+      const result = await foodCollection.insertOne(foodItem);
+      res.send(result)
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
