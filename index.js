@@ -64,7 +64,8 @@ async function run() {
       const foodCollection = database.collection('foods');
       const foodItem = req.body;
       const result = await foodCollection.insertOne(foodItem);
-      res.send(result);
+
+      // ...existing code...      res.send(result);
     });
 
     //get all foods
@@ -95,13 +96,40 @@ async function run() {
       const foodCollection = database.collection('foods');
       const cursor = foodCollection.find(query);
       const foods = await cursor.toArray();
-      if(foods){
+      if (foods) {
         res.send(foods);
       } else {
         res.send('food not found')
       }
 
     });
+
+    // Update food info
+    app.put('/update', async (req, res) => {
+      const updatedData = req.body;
+      const id = updatedData._id;
+      delete updatedData._id;
+      //console.log(updatedData);
+      ///console.log(id);
+
+
+
+      const foodCollection = database.collection('foods');
+      const filter = { _id: new ObjectId(id) };
+      const update = { $set: updatedData };
+
+
+      const result = await foodCollection.updateOne(filter, update);
+
+      // console.log('Update result:', result);
+
+      if (result.modifiedCount > 0) {
+        res.send({ message: 'Food updated successfully' });
+      } else {
+        res.status(404).send({ message: 'No food found with the given ID' });
+      }
+    });
+
 
 
     // Send a ping to confirm a successful connection
