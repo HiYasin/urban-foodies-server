@@ -127,6 +127,16 @@ async function run() {
       res.send(result)
     });
 
+    app.get('/top-purchased-foods', async (req, res) => {
+      try {
+        const foodCollection = database.collection('foods');
+        const topFoods = await foodCollection.find().sort({ purchase: -1 }).limit(6).toArray();
+        res.send(topFoods);
+      } catch (error) {
+        console.error('Error fetching top purchased foods:', error);
+        res.status(500).send({ message: 'An error occurred', error });
+      }
+    });
     //get specific users ordered foods
     app.get('/myorder', async (req, res) => {
       const email = req.query.email;
