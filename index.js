@@ -152,7 +152,25 @@ async function run() {
       }
 
     });
+    // Search food items by name
+    app.get('/search-foods', async (req, res) => {
+      const foodName = req.query.name;
+      console.log(foodName);
+      try {
+        const foodCollection = database.collection('foods');
+        const query = { food_name: foodName }; // Case-insensitive search
+        const foods = await foodCollection.find(query).toArray();
 
+        if (foods.length > 0) {
+          res.send(foods);
+        } else {
+          res.status(404).send({ message: 'No food items found' });
+        }
+      } catch (error) {
+        console.error('Error searching for food items:', error);
+        res.status(500).send({ message: 'An error occurred', error });
+      }
+    });
     // Delete a specific order
     app.delete('/myorder/:id', async (req, res) => {
       const id = req.params.id;
