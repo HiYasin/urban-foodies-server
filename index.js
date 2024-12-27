@@ -118,13 +118,32 @@ async function run() {
         res.status(404).send({ message: 'No food found with the given ID' });
       }
     });
-    
+
     // Purchase food
     app.post('/purchase', async (req, res) => {
       const foodCollection = database.collection('purchasedFoods');
       const foodItem = req.body;
       const result = await foodCollection.insertOne(foodItem);
       res.send(result)
+    });
+
+    //get specific users ordered foods
+    app.get('/myorder', async (req, res) => {
+      const email = req.query.email;
+
+      query = { 'buyer_email': email };
+
+      console.log(email);
+
+      const foodCollection = database.collection('purchasedFoods');
+      const cursor = foodCollection.find(query);
+      const foods = await cursor.toArray();
+      if (foods) {
+        res.send(foods);
+      } else {
+        res.send('food not found')
+      }
+
     });
 
     // Send a ping to confirm a successful connection
