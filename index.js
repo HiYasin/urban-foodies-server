@@ -13,7 +13,7 @@ const port = process.env.PORT || 5000;
 app.use(express.json());
 app.use(cors(
   {
-    origin: ['http://localhost:5173'], //replace with client address
+    origin: ['http://localhost:5173', 'https://urban-foodies-e0b28.web.app', 'https://urban-foodies-e0b28.firebaseapp.com'], //replace with client address
     credentials: true,
   }
 ));
@@ -21,7 +21,13 @@ app.use(cors(
 // cookie parser middleware
 app.use(cookieParser());
 
-
+const cookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+};
+//localhost:5000 and localhost:5173 are treated as same site.  so sameSite value must be strict in development server.  in production sameSite will be none
+// in development server secure will false .  in production secure will be true
 
 
 
@@ -158,7 +164,7 @@ async function run() {
       console.log(foodName);
       try {
         const foodCollection = database.collection('foods');
-        const query = { food_name: foodName }; // Case-insensitive search
+        const query = { food_name: { $regex: foodName, $options: 'i' } }; // Case-insensitive search
         const foods = await foodCollection.find(query).toArray();
 
         if (foods.length > 0) {
